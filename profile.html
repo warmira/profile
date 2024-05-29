@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Profil Użytkownika</title>
+    <link rel="stylesheet" href="profile.css">
+</head>
+<body>
+    <header>
+        <nav>
+            <a href="homepage.html"> Powrót do strony głównej!</a>
+        </nav>
+        <nav>
+            <a href="login.html">Zaloguj się!</a>
+        </nav>
+    </header>
+
+    <main>
+        <div class="profile-container">
+            <form class="profile-form">
+                <label for="firstName">Imię:</label>
+                <input type="text" id="firstName" name="firstName" required>
+
+                <label for="lastName">Nazwisko:</label>
+                <input type="text" id="lastName" name="lastName" required>
+
+                <label for="email">E-mail:</label>
+                <input type="email" id="email" name="email" required>
+
+                <label for="photo">Zdjęcie:</label>
+                <input type="file" id="photo" name="photo" accept="image/*">
+
+                <button type="submit">Zapisz</button>
+            </form>
+        </div>
+    </main>
+
+    <footer>
+        <p>Portal społecznościowy - znajdź i połącz się ze znajomymi.</p>
+    </footer>
+</body>
+</html>
