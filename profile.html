@@ -18,15 +18,34 @@
 
     <main>
         <div class="profile-container">
-            <form class="profile-form">
-                <label for="firstName">Imię:</label>
-                <input type="text" id="firstName" name="firstName" required>
+            <form class="profile-form" method="post" action="update_profile.php">
+                <?php
+                    // Connect to your database
+                    $conn = new mysqli("localhost", "root", "", "profile");
 
-                <label for="lastName">Nazwisko:</label>
-                <input type="text" id="lastName" name="lastName" required>
+                    // Check connection
+                    if ($conn->connect_error) {
+                        die("Connection failed: " . $conn->connect_error);
+                    }
 
-                <label for="email">E-mail:</label>
-                <input type="email" id="email" name="email" required>
+                    // Query to retrieve user's information
+                    $sql = "SELECT * FROM profile WHERE ID = 1"; // Change the ID to the appropriate user's ID
+                    $result = $conn->query($sql);
+
+                    if ($result->num_rows > 0) {
+                        // Output data of each row
+                        while($row = $result->fetch_assoc()) {
+                            echo '<label for="firstName">Imię i Nazwisko:</label>';
+                            echo '<input type="text" id="Name" name="Name" value="' . $row["firstName"] . ' ' . $row["lastName"] . '" required>';
+
+                            echo '<label for="email">E-mail:</label>';
+                            echo '<input type="email" id="email" name="email" value="' . $row["email"] . '" required>';
+                        }
+                    } else {
+                        echo "0 results";
+                    }
+                    $conn->close();
+                ?>
 
                 <label for="photo">Zdjęcie:</label>
                 <input type="file" id="photo" name="photo" accept="image/*">
@@ -37,7 +56,14 @@
     </main>
 
     <footer>
-        <p>Portal społecznościowy - znajdź i połącz się ze znajomymi.</p>
+        <div class="contact-info">
+            <h3>Kontakt</h3>
+            <p>Email: kontakt@portal.pl</p>
+            <p>Telefon: +48 123 456 789</p>
+            <p>Adres: Ul. Przykładowa 1, 00-001 Warszawa</p>
+        </div>
+        <p>2024 Wszystkie prawa zastrzeżone. Portal społecznościowy - znajdź i połącz się ze znajomymi.</p>
     </footer>
+
 </body>
 </html>
