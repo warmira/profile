@@ -1,19 +1,19 @@
 <?php
 $servername = "localhost"; // Zmień na odpowiednią wartość
-$username = "root"; // Zmień na odpowiednią wartość
-$password = ""; // Zmień na odpowiednią wartość
+$dbusername = "root"; // Zmień na odpowiednią wartość
+$dbpassword = ""; // Zmień na odpowiednią wartość
 $dbname = "profile";
 
 // Sprawdzenie, czy formularz został wysłany metodą POST
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     // Pobieranie danych z formularza
-    $username = $_POST['username'];
+    $fullName = $_POST['fullName'];
     $email = $_POST['email'];
     $password = $_POST['password'];
-    $passwordtwo = $_POST['passwordtwo'];
+    $passwordtwo = $_POST['confirmPassword'];
 
     // Sprawdzanie, czy pola nie są puste
-    if (empty($username) || empty($email) || empty($password) || empty($passwordtwo)) {
+    if (empty($fullName) || empty($email) || empty($password) || empty($passwordtwo)) {
         echo "Wszystkie pola są wymagane!";
         exit;
     }
@@ -27,27 +27,60 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     // Hashowanie hasła
     $hashed_password = password_hash($password, PASSWORD_DEFAULT);
 
+    $nameParts = explode(" ", $fullName, 2);
+    $firstName = $nameParts[0];
+    $lastName = $nameParts[1] ?? '';
+
     // Tworzenie połączenia z bazą danych
-    $conn = new mysqli($servername, $username, $password, $dbname);
+    $conn = new mysqli($servername, $dbusername, $dbpassword, $dbname);
 
     // Sprawdzanie połączenia
     if ($conn->connect_error) {
         die("Błąd połączenia: " . $conn->connect_error);
     }
 
-    // Wstawianie nowego użytkownika do bazy danych
-    $sql = "INSERT INTO user (email, password) VALUES (?, ?)";
-    $stmt = $conn->prepare($sql);
-    $stmt->bind_param("ss", $email, $hashed_password);
+    $conn->begin_transaction();
 
-    if ($stmt->execute()) {
+    try {
+        // Wstawianie nowego użytkownika do bazy danych
+        $sql = "INSERT INTO user (email, nameUser, password) VALUES (?, ?, ?)";
+        $stmt = $conn->prepare($sql);
+        $stmt->bind_param("sss", $email, $fullName, $hashed_password);
+
+        if ($stmt->execute()) {
+            // Pobranie ID nowego użytkownika
+            $userID = $stmt->insert_id;
+        } else {
+            throw new Exception("Błąd: " . $stmt->error);
+        }
+
+        $stmt->close();
+
+        // Wstawianie nowego profilu do bazy danych
+        $sql = "INSERT INTO profile (firstName, lastName, profilePhotoID, description) VALUES (?, ?, 0, '')";
+        $stmt = $conn->prepare($sql);
+        $stmt->bind_param("ss", $firstName, $lastName);
+        $stmt->execute();
+        $profileID = $stmt->insert_id;
+
+        $stmt->close();
+
+        // Wstawianie powiązania użytkownika z profilem do bazy danych
+        $sql = "INSERT INTO owner (userID, profileID) VALUES (?, ?)";
+        $stmt = $conn->prepare($sql);
+        $stmt->bind_param("ii", $userID, $profileID);
+        $stmt->execute();
+
+        $stmt->close();
+
+        $conn->commit();
         echo "Rejestracja zakończona sukcesem!";
-    } else {
-        echo "Błąd: " . $sql . "<br>" . $conn->error;
+        Header("Location: login.html");
+    } catch (Exception $e) {
+        $conn->rollback();
+        echo "Błąd: " . $e->getMessage();
     }
 
-    // Zamykanie połączenia
-    $stmt->close();
     $conn->close();
 }
 ?>

@@ -6,8 +6,10 @@
 
 body {
     font-family: Arial, sans-serif;
-    background-color: #f4f4f4;
-    color: #333;
+    background-image: url('xDD.png');
+    background-size: cover; /* Sprawia, że tło pokrywa całą stronę */
+    background-repeat: no-repeat; /* Zapobiega powtarzaniu obrazu */
+    background-attachment: fixed; /* Utrzymuje tło w stałej pozycji */
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -124,18 +126,11 @@ button:hover {
 }
 
 footer {
-    width: 100%;
-    background-color: #333;
+    background-color: #007BFF;
     color: white;
-    padding: 20px 0;
     text-align: center;
-    margin-top: 20px;
-}
-
-.contact-info {
-    margin-bottom: 20px;
-}
-
-.contact-info p {
-    margin: 5px 0;
-}
+    padding: 10px 0;
+    width: 100%;
+    position: absolute; /* Zmiana z fixed na absolute */
+    bottom: 0;
+  }
