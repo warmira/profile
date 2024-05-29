@@ -35,25 +35,10 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         die("Błąd połączenia: " . $conn->connect_error);
     }
 
-    // Sprawdzanie, czy email już istnieje
-    $sql = "SELECT id FROM user WHERE email = ?";
-    $stmt = $conn->prepare($sql);
-    $stmt->bind_param("s", $email);
-    $stmt->execute();
-    $stmt->store_result();
-
-    if ($stmt->num_rows > 0) {
-        echo "Użytkownik z podanym emailem już istnieje!";
-        $stmt->close();
-        $conn->close();
-        exit;
-    }
-    $stmt->close();
-
     // Wstawianie nowego użytkownika do bazy danych
-    $sql = "INSERT INTO user (nameUser, email, password) VALUES (?, ?, ?)";
+    $sql = "INSERT INTO user (email, password) VALUES (?, ?)";
     $stmt = $conn->prepare($sql);
-    $stmt->bind_param("sss", $username, $email, $hashed_password);
+    $stmt->bind_param("ss", $email, $hashed_password);
 
     if ($stmt->execute()) {
         echo "Rejestracja zakończona sukcesem!";
