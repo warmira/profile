@@ -43,9 +43,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
     try {
         // Wstawianie nowego użytkownika do bazy danych
-        $sql = "INSERT INTO user (email, nameUser, password) VALUES (?, ?, ?)";
+        $sql = "INSERT INTO user (email, password) VALUES (?, ?)";
         $stmt = $conn->prepare($sql);
-        $stmt->bind_param("sss", $email, $fullName, $hashed_password);
+        $stmt->bind_param("ss", $email,  $hashed_password);
 
         if ($stmt->execute()) {
             // Pobranie ID nowego użytkownika

@@ -1,11 +1,11 @@
 -- phpMyAdmin SQL Dump
--- version 5.2.1
+-- version 5.2.0
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Apr 10, 2024 at 04:47 PM
--- Wersja serwera: 10.4.32-MariaDB
--- Wersja PHP: 8.2.12
+-- Czas generowania: 03 Cze 2024, 08:25
+-- Wersja serwera: 10.4.24-MariaDB
+-- Wersja PHP: 8.0.19
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 START TRANSACTION;
@@ -18,7 +18,7 @@ SET time_zone = "+00:00";
 /*!40101 SET NAMES utf8mb4 */;
 
 --
--- Database: `profile`
+-- Baza danych: `profile`
 --
 
 -- --------------------------------------------------------
@@ -31,7 +31,22 @@ CREATE TABLE `friend` (
   `ID` int(11) NOT NULL,
   `profile1ID` int(11) NOT NULL,
   `profile2ID` int(11) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- --------------------------------------------------------
+
+--
+-- Struktura tabeli dla tabeli `message`
+--
+
+CREATE TABLE `message` (
+  `Mess_ID` int(11) NOT NULL,
+  `senderID` int(11) NOT NULL,
+  `revID` int(11) NOT NULL,
+  `subject` varchar(45) NOT NULL,
+  `content` varchar(255) NOT NULL,
+  `timesstamp` date NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- --------------------------------------------------------
 
@@ -43,7 +58,7 @@ CREATE TABLE `owner` (
   `ID` int(11) NOT NULL,
   `userID` int(11) NOT NULL,
   `profileID` int(11) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- --------------------------------------------------------
 
@@ -55,7 +70,7 @@ CREATE TABLE `photo` (
   `ID` int(11) NOT NULL,
   `profileID` int(11) NOT NULL,
   `URL` varchar(128) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- --------------------------------------------------------
 
@@ -69,7 +84,15 @@ CREATE TABLE `profile` (
   `lastName` varchar(128) NOT NULL,
   `profilePhotoID` int(11) NOT NULL,
   `description` text NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+--
+-- Zrzut danych tabeli `profile`
+--
+
+INSERT INTO `profile` (`ID`, `firstName`, `lastName`, `profilePhotoID`, `description`) VALUES
+(1, 'Jan ', 'Kowalski', 0, 'Opis gościa - Jan Kowalski'),
+(2, 'Renata', 'Kołodziejczyk', 1, 'Opis babki Renatki');
 
 -- --------------------------------------------------------
 
@@ -81,7 +104,7 @@ CREATE TABLE `profiletype` (
   `ID` int(11) NOT NULL,
   `profileID` int(11) NOT NULL,
   `type` int(11) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- --------------------------------------------------------
 
@@ -93,7 +116,7 @@ CREATE TABLE `user` (
   `ID` int(11) NOT NULL,
   `email` varchar(128) NOT NULL,
   `password` varchar(128) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 --
 -- Indeksy dla zrzutów tabel
@@ -104,6 +127,12 @@ CREATE TABLE `user` (
 --
 ALTER TABLE `friend`
   ADD PRIMARY KEY (`ID`);
+
+--
+-- Indeksy dla tabeli `message`
+--
+ALTER TABLE `message`
+  ADD PRIMARY KEY (`Mess_ID`);
 
 --
 -- Indeksy dla tabeli `owner`
@@ -139,58 +168,64 @@ ALTER TABLE `user`
   ADD PRIMARY KEY (`ID`);
 
 --
--- AUTO_INCREMENT for dumped tables
+-- AUTO_INCREMENT dla zrzuconych tabel
 --
 
 --
--- AUTO_INCREMENT for table `friend`
+-- AUTO_INCREMENT dla tabeli `friend`
 --
 ALTER TABLE `friend`
   MODIFY `ID` int(11) NOT NULL AUTO_INCREMENT;
 
 --
--- AUTO_INCREMENT for table `owner`
+-- AUTO_INCREMENT dla tabeli `message`
+--
+ALTER TABLE `message`
+  MODIFY `Mess_ID` int(11) NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT dla tabeli `owner`
 --
 ALTER TABLE `owner`
   MODIFY `ID` int(11) NOT NULL AUTO_INCREMENT;
 
 --
--- AUTO_INCREMENT for table `photo`
+-- AUTO_INCREMENT dla tabeli `photo`
 --
 ALTER TABLE `photo`
   MODIFY `ID` int(11) NOT NULL AUTO_INCREMENT;
 
 --
--- AUTO_INCREMENT for table `profile`
+-- AUTO_INCREMENT dla tabeli `profile`
 --
 ALTER TABLE `profile`
-  MODIFY `ID` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `ID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
--- AUTO_INCREMENT for table `profiletype`
+-- AUTO_INCREMENT dla tabeli `profiletype`
 --
 ALTER TABLE `profiletype`
   MODIFY `ID` int(11) NOT NULL AUTO_INCREMENT;
 
 --
--- AUTO_INCREMENT for table `user`
+-- AUTO_INCREMENT dla tabeli `user`
 --
 ALTER TABLE `user`
   MODIFY `ID` int(11) NOT NULL AUTO_INCREMENT;
 
 --
--- Constraints for dumped tables
+-- Ograniczenia dla zrzutów tabel
 --
 
 --
--- Constraints for table `owner`
+-- Ograniczenia dla tabeli `owner`
 --
 ALTER TABLE `owner`
   ADD CONSTRAINT `owner_ibfk_1` FOREIGN KEY (`userID`) REFERENCES `user` (`ID`),
   ADD CONSTRAINT `owner_ibfk_2` FOREIGN KEY (`profileID`) REFERENCES `profile` (`ID`);
 
 --
--- Constraints for table `photo`
+-- Ograniczenia dla tabeli `photo`
 --
 ALTER TABLE `photo`
   ADD CONSTRAINT `photo_ibfk_1` FOREIGN KEY (`profileID`) REFERENCES `profile` (`ID`);

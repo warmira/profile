@@ -21,7 +21,7 @@ session_start();
                 <a href="profile.php">Profil Użytkownika</a>
                 <a href="logout.php">Wyloguj się</a>
             <?php else: ?>
-                <a href="login.php">Zaloguj się</a>
+                <a href="login.html">Zaloguj się</a>
             <?php endif; ?>
             </nav>
         </div>

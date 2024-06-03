@@ -21,7 +21,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         die ("Błąd połączenia " . $conn->connect_error);
     }
 
-    $sql = "SELECT ID, nameUser, password FROM user WHERE email = ?";
+    $sql = "SELECT ID, email, password FROM user WHERE email = ?";
     $stmt = $conn->prepare($sql);
     $stmt->bind_param("s", $email);
     $stmt->execute();

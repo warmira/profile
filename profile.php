@@ -135,6 +135,12 @@ $conn->close();
 
                 <?php if ($photoURL): ?>
                 <div class="profile-photo">
+                    <style>
+                        img {
+                           max-width:100px;
+                           max-height:100px;
+                        }
+                    </style>
                     <img src="<?php echo htmlspecialchars($photoURL); ?>" alt="Zdjęcie profilowe">
                 </div>
                 <?php endif; ?>
