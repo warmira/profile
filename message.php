@@ -1,50 +1,24 @@
 <?php
-// Ustawienia bazy danych
-$servername = "localhost";
-$username = "root";
-$password = "";
-$dbname = "profile";
+require_once('class/Message.class.php');
 
-// Tworzenie połączenia
-$conn = new mysqli($servername, $username, $password, $dbname);
 
-// Sprawdzanie połączenia
-if ($conn->connect_error) {
-    die("Connection failed: " . $conn->connect_error);
-}
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $subject = $_POST['subject'];
     $content = $_POST['content'];
     $senderID = 1; // Przykładowy ID nadawcy, zmienić zgodnie z logiką aplikacji
     $revID = 2; // Przykładowy ID odbiorcy, zmienić zgodnie z logiką aplikacji
-    $timestamp = date('Y-m-d H:i:s');
 
-    $sql = "INSERT INTO message (senderID, revID, subject, content, timesstamp) VALUES (?, ?, ?, ?, ?)";
-    $stmt = $conn->prepare($sql);
-    $stmt->bind_param("iisss", $senderID, $revID, $subject, $content, $timestamp);
-
-    if ($stmt->execute()) {
-        echo "New message sent successfully";
+    if(Message::NewMessage($revID,$senderID,$subject,$content)) {
+        echo "Wiadomość została wysłana";
     } else {
-        echo "Error: " . $sql . "<br>" . $conn->error;
+        echo "Błąd - wiadomośc nie została wysłana";
     }
-
-    $stmt->close();
+    
 }
 
 // Pobieranie wiadomości
-$sql = "SELECT * FROM message ORDER BY timesstamp DESC";
-$result = $conn->query($sql);
-$messages = [];
-
-if ($result->num_rows > 0) {
-    while ($row = $result->fetch_assoc()) {
-        $messages[] = $row;
-    }
-}
-
-$conn->close();
+$messages = Message::GetInbox(1);
 ?>
 
 <!DOCTYPE html>
@@ -62,8 +36,8 @@ $conn->close();
         <div class="chat-box">
             <?php foreach ($messages as $message): ?>
                 <div class="message">
-                    <div class="sender">User <?php echo htmlspecialchars($message['senderID']); ?>:</div>
-                    <div class="message-content"><?php echo htmlspecialchars($message['content']); ?></div>
+                    <div class="sender">User <?php echo $message->GetSndName(); ?>:</div>
+                    <div class="message-content"><?php echo $message->GetContent(); ?></div>
                 </div>
             <?php endforeach; ?>
         </div>
