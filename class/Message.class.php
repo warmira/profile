@@ -8,6 +8,7 @@ class Message {
     private string $subject;
     private string $content;
     private string $timestamp;
+    private array $answers; //tablica obiektów  klasy Message
 
     public function __construct(int $ID, int $rcvID, int $sndID, string $subject, string $content, string $timestamp) {
         $this->ID = $ID;
@@ -21,7 +22,7 @@ class Message {
         $sql = "SELECT profile.firstName, profile.lastName FROM message 
             LEFT JOIN owner on message.senderID = owner.userID 
             LEFT JOIN profile on profile.ID = owner.profileID 
-            WHERE message.ID = ?";
+            WHERE message.Mess_ID = ?";
         $q = $db->prepare($sql);
         $q->bind_param("i", $this->rcvID);
         $q->execute();
@@ -32,7 +33,7 @@ class Message {
         $sql = "SELECT profile.firstName, profile.lastName FROM message 
             LEFT JOIN owner on message.rcvID = owner.userID 
             LEFT JOIN profile on profile.ID = owner.profileID 
-            WHERE message.ID = ?";
+            WHERE message.Mess_ID = ?";
         $q = $db->prepare($sql);
         $q->bind_param("i", $this->sndID);
         $q->execute();
@@ -75,12 +76,28 @@ class Message {
             $messages = array();
 
             while($row = $result->fetch_assoc()) {
-                $messages[] = new Message($row['ID'], $row['rcvID'], $row['senderID'], $row['subject'], $row ['content'], $row['timestamp']);
+                if($row['answerTo'] == null) //wiadomosc nie ma odpowiedzi
+                    $messages[] = new Message($row['Mess_ID'], $row['rcvID'], $row['senderID'], $row['subject'], $row ['content'], $row['timestamp']);
+                else { //jeśłi ma odpowiedz
+                    //do jakiej wiadomosci jest to odpowiedz
+                    $answerTo = $row['answerTo'];
+                    //przeszukaj wiadomosci szukając "rodzica"
+                    foreach ($messages as $message) {
+                        //sprawdz czy id sie zgadza
+                        if($message->GetID() == $answerTo) //to jest odpowiedz do tej wiadomosci
+                            $this->AddAnswer(new Message($row['Mess_ID'], $row['rcvID'], $row['senderID'], $row['subject'], $row ['content'], $row['timestamp']));
+                    }
+                }
             }
+
             return $messages;
         } else {
             die("ERROR: Błąd przy pobieraniu zawartości skrzynki odbiorczej");
         }
+    }
+
+    public function GetID() : int {
+        return $this->ID;
     }
 
     public function GetSubject() : string {
@@ -97,6 +114,11 @@ class Message {
 
     public function GetSndName() : string {
         return $this->sndName;
+    }
+    public function AddAnswer(Message $answer) {
+        if(!is_array($this->answers))
+            $this->answers = Array(); //zainicjuj jako pusta tablice
+        $this->answers[] = $answer;
     }
 }
 ?>
